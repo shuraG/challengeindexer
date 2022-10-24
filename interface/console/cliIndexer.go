@@ -12,18 +12,14 @@ import (
 func main() {
 	rootFilePath := os.Args[1]
 	// rootFilePath = "C:\\enron_mail_20110402\\maildir"
-	fmt.Println("Reading for: ", config.ChunkReader)
 
 	fmt.Println("Reading for: ", rootFilePath)
 	fileSource := infraestructure.NewEmailFileSource(rootFilePath)
 	emailService := infraestructure.EmailIteratorService{Source: fileSource, Chunk: config.ChunkReader}
 
-	emailZincService := infraestructure.EmailZincService{
-		Host:         config.HostZync,
-		User:         config.UserZync,
-		Pass:         config.PassZync,
-		DefaultIndex: config.DefaultIndex,
-	}
+	httpZinc := infraestructure.NewHttpClient(config.HostZync, config.UserZync, config.PassZync, 5)
+
+	emailZincService := infraestructure.EmailZincService{DefaultIndex: "indexEmail", HttpClient: httpZinc}
 
 	indexMailApp := application.IndexMailApp{EmailService: &emailService, EmailIndexer: emailZincService}
 
