@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-
-	// "example/indexer/domain"
+	// "encoding/json"
+	// "fmt"
+	"example/indexer/application"
+	"example/indexer/config"
+	"example/indexer/infraestructure"
+	"example/indexer/interface/restHttp"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
-		w.Write([]byte(""))
-	})
+	httpZinc := infraestructure.NewHttpClient(config.HostZync, config.UserZync, config.PassZync, 5)
 
-	http.ListenAndServe(":3000", r)
+	emailZincService := infraestructure.EmailZincService{DefaultIndex: "indexEmail", HttpClient: httpZinc}
+
+	indexMailApp := application.IndexMailApp{EmailIndexer: emailZincService}
+
+	handler := restHttp.HandlerEmails{IndexMailApp: indexMailApp}
+
+	restHttp.InitServer(":3000", handler)
+
 }
