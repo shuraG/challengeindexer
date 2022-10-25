@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/plain; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emails</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="app" class="root-container">
+        <div>
+            <input type="text" v-model="search">
+            <button type="button" v-on:click="searchEmails">Search</button>
+        </div>
+        <div class="body-container">
+            <div class="list-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>From</th>
+                            <th>To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(email, index) in emails" :key="index" v-on:click="setMail(index)">
+                            <td v-text="email.Subject"></td>
+                            <td v-text="email.From"></td>
+                            <td v-text="email.To"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button :disabled="loading" v-on:click="onPrev">Prev</button>
+                    <button :disabled="loading" v-on:click="onNext">Next</button>
+                </div>
+            </div>
+            <div class="visor-container">
+                <p>{{currentContent}}</p>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    const emailsApp = {
+        data() {
+            return {
+                emails: [],
+                search: "",
+                currentContent: "",
+                start: 1,
+                loading: false
+            }
+        },
+        methods: {
+            searchEmails() {
+                this.loading = true
+                axios.get(`http://localhost:3000/emails/search/${this.search}?start=${this.start}&limit=10}`)
+                    .then(result => {
+                        console.log(result)
+                        this.emails = result.data
+                        this.loading = false
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        this.loading = false
+                    })
+            },
+            setMail(index) {
+                this.currentContent = this.emails[index].Body
+                console.log(this.emails[index].Body)
+            },
+            onNext() {
+                if (this.emails.lenght = 10)
+                    this.start += 10
+                this.searchEmails()
+            },
+            onPrev() {
+                if (this.start > 10)
+                    this.start -= 10
+                this.searchEmails()
+            }
+        }
+    }
+
+    var mountedApp = Vue.createApp(emailsApp).mount('#app')
+</script>
+
+</html>>
