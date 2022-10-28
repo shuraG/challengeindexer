@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "encoding/json"
-	// "fmt"
 	"example/indexer/application"
 	"example/indexer/config"
 	"example/indexer/infraestructure"
