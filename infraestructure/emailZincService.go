@@ -4,10 +4,7 @@ import (
 	"example/indexer/domain"
 )
 
-type emailBulkRequest struct {
-	Index   string         `json:"index"`
-	Records []domain.Email `json:"records"`
-}
+
 
 type EmailZincService struct {
 	DefaultIndex string

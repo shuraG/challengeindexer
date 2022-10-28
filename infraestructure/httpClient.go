@@ -60,8 +60,6 @@ func (h HttpClient) SaveBulk(emails []domain.Email, index string) bool {
 
 func (h HttpClient) FindByMatch(index, keyword string, start, limit int) EmailZincResponse {
 
-	client := http.Client{Timeout: 5 * time.Second}
-
 	request := `{
 			"search_type": "matchphrase",
 			"query": {
@@ -75,7 +73,7 @@ func (h HttpClient) FindByMatch(index, keyword string, start, limit int) EmailZi
 
 	req, _ := http.NewRequest(http.MethodPost, h.host+fmt.Sprintf(findByMatch, index), strings.NewReader(request))
 	req.SetBasicAuth(h.user, h.pass)
-	res, err := client.Do(req)
+	res, err := h.client.Do(req)
 
 	if err != nil {
 		fmt.Print(err.Error())
@@ -91,4 +89,9 @@ func (h HttpClient) FindByMatch(index, keyword string, start, limit int) EmailZi
 	json.Unmarshal(responseData, &emailZincResponse)
 
 	return emailZincResponse
+}
+
+type emailBulkRequest struct {
+	Index   string         `json:"index"`
+	Records []domain.Email `json:"records"`
 }
